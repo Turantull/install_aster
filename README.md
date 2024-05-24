@@ -42,3 +42,33 @@ sudo ln -s /asterisk/asterisk/sbin/asterisk /sbin/asterisk   # Сделать с
 
 crontab
 0 0 * * * root /sbin/asterisk-cc -rx 'logger rotate'
+
+---IPTABLES
+sudo apt install iptables-persistent
+
+sudo netfilter-persistent save
+sudo netfilter-persistent reload
+
+---FAIL2BAN
+в logger.conf в строке messeges => вконце дописать security
+в астере потом logger reload
+в  /etc/fail2ban/jail.conf дописую в конце
+
+Для шлюзов игнорайпи
+ignoreip = 127.0.0.1/8 ::1 
+
+
+[asterisk-callcentre]
+enabled = true
+filter = asterisk
+action   = iptables-allports[name=ASTERISK, protocol=all]
+logpath = /asterisk/asterisk-bb/var/log/asterisk/messages
+maxretry=5
+
+потом fail2ban-client reload
+проверить состояние fail2ban-client status asterisk-callcentre
+
+
+fail2ban-client set asterisk-callcentre unbanip ip   --РАЗБАНИТЬ
+
+sudo fail2ban-client set ssh-iptables unbanip ip
